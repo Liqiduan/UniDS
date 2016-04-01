@@ -1,0 +1,55 @@
+/**
+ * @file fifo.h
+ * @brief Header file of fifo part.
+ * @author Liqiduan
+ * @version 1.0.0
+ * @date 2016-04-01
+ */
+
+#ifndef _UNIDS_FIFO_H_
+#define _UNIDS_FIFO_H_
+
+#define MAX_FIFO_SIZE 32
+
+typedef uint16 fifo_len_t;
+typedef uint8 fifo_data_t;
+
+/**
+ * @brief Here is the struct definiton of fifo
+ *
+ */
+typedef struct
+{
+	fifo_len_t len;		///The size of fifo
+	fifo_data_t readP;	///Point to the memory will be read
+	fifo_data_t writeP;	///Point to the memory will be write
+	fifo_data_t dataP;	///Point to the start of the memory use as fifo, usually from dataP[0] to dataP[len-1]
+}fifo;
+
+/**
+ * @brief Initial memory for fifo to use. 
+ */
+void fifo_init(fifo *p, fifo_len_t len, fifo_data_t *dataP);
+
+/**
+ * @brief Return how many memory has been used!
+ */
+fifo_len_t fifo_used(fifo *p);
+
+/**
+ * @brief Clear a fifo.
+ */
+void fifo_clear(fifo *p);
+
+/**
+ * @brief Get data from fifo.
+ */
+int fifo_gets(fifo *p, fifo_len_t len, fifo_data_t *bufP);
+
+/**
+ * @brief Put data into a fifo.
+ */
+int fifo_puts(fifo *p, fifo_len_t len, fifo_data_t *bufP);
+
+#endif 
+
