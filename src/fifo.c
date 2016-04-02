@@ -9,16 +9,16 @@
 #include "fifo.h"
 
 /**
- * @brief Initial memory for fifo to use. 
+ * @brief Initial memory for fifo to use.
  *
  * @param p 	 Point to the fifo will be initialled.
  * @param len	 Indicate how many memory will be used.
  * @param dataP  Point to the memory will be used.
  *
  * Initial memory from dataP to dataP + len*sizeof(fifo_data_t)
- * 
- * 
- * @return 0 - Success 
+ *
+ *
+ * @return 0 - Success
  * 	   -1 - failed
  */
 
@@ -31,6 +31,13 @@ int fifo_init(fifo *p, fifo_len_t len, fifo_data_t *dataP)
 		p->beginP=dataP;
 		p->endP=p->beginP + len;
 	}
+    else
+    {
+        p->readP=NULL;
+        p->writeP=NULL;
+		p->beginP=NULL;
+		p->endP=NULL;
+    }
 }
 
 
@@ -39,13 +46,18 @@ int fifo_init(fifo *p, fifo_len_t len, fifo_data_t *dataP)
  *
  * @param p Point to the fifo
  *
- * @return Size has been used 
+ * @return Size has been used
  */
 fifo_len_t fifo_used(fifo *p)
 {
+    if(p->beginP==NULL)
+    {
+        return MAX_FIFO_SIZE;
+    }
+
 	if( p->readP >= p->writeP )
 	{
-		return (p->readP - p->writeP); 
+		return (p->readP - p->writeP);
 	}
 	else
 	{
@@ -78,19 +90,24 @@ void fifo_clear(fifo *p)
 int fifo_gets(fifo *p, fifo_len_t len, fifo_data_t *bufP)
 {
 	fifo_len_t count=0;
-	while(p->readP!=p->writeP)
+
+	if(p->beginP==NULL)
+    {
+        return -1;
+    }
+
+	while( (p->readP!=p->writeP) && (len>0) )
 	{
-		if(p->readP > p->endP)
+		if(p->readP >= p->endP)
 		{
 			p->readP=p->beginP;
 		}
-		else
-		{
-			*bufP = *p->readP;
-			count++;
-			p->readP++;
-			bufP++;
-		}
+
+        *bufP = *(p->readP);
+        count++;
+        p->readP++;
+        bufP++;
+        len--;
 	}
 	return count;
 }
@@ -107,19 +124,23 @@ int fifo_gets(fifo *p, fifo_len_t len, fifo_data_t *bufP)
 int fifo_puts(fifo *p, fifo_len_t len, fifo_data_t *bufP)
 {
 	fifo_len_t count=0;
-	while(p->readP!=(p->writeP+1))
+    if(p->beginP==NULL)
+    {
+        return -1;
+    }
+
+	while( (p->readP!=(p->writeP+1)) && (len>0) )
 	{
-		if(p->writeP > p->endP)
+		if(p->writeP >= p->endP)
 		{
 			p->writeP=p->beginP;
 		}
-		else
-		{
-			*p->writeP = *bufP;
-			count++;
-			p->writeP++;
-			bufP++;
-		}
+
+        *p->writeP = *bufP;
+        count++;
+        p->writeP++;
+        bufP++;
+        len--;
 	}
 	return count;
 }

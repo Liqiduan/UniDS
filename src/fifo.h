@@ -9,10 +9,19 @@
 #ifndef _UNIDS_FIFO_H_
 #define _UNIDS_FIFO_H_
 
-#define MAX_FIFO_SIZE 32
+#ifndef NULL
+#define NULL 0
+#endif // NULL
 
+#define MAX_FIFO_SIZE 64
+
+struct data_s
+{
+    int a;
+    int b;
+};
 typedef unsigned int fifo_len_t;
-typedef unsigned int fifo_data_t;
+typedef struct data_s fifo_data_t;
 
 /**
  * @brief Here is the struct definiton of fifo
@@ -20,10 +29,10 @@ typedef unsigned int fifo_data_t;
  */
 typedef struct
 {
-	fifo_data_t readP;	///Point to the memory will be read
-	fifo_data_t writeP;	///Point to the memory will be write
-	fifo_data_t beginP;	///Point to the begin of a memory used as fifo.
-	fifo_data_t endP;	///Point to the end of a memory used as fifo.
+	fifo_data_t* readP;	///Point to the memory will be read
+	fifo_data_t* writeP;	///Point to the memory will be write
+	fifo_data_t* beginP;	///Point to the begin of a memory used as fifo.
+	fifo_data_t* endP;	///Point to the end of a memory used as fifo.
 }fifo;
 
 /**
