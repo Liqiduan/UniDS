@@ -30,6 +30,7 @@ int fifo_init(fifo *p, fifo_len_t len, fifo_data_t *dataP)
 		p->writeP=dataP;
 		p->beginP=dataP;
 		p->endP=p->beginP + len;
+		return -1;
 	}
     else
     {
@@ -38,6 +39,7 @@ int fifo_init(fifo *p, fifo_len_t len, fifo_data_t *dataP)
 		p->beginP=NULL;
 		p->endP=NULL;
     }
+		return 0;
 }
 
 
@@ -55,13 +57,13 @@ fifo_len_t fifo_used(fifo *p)
         return MAX_FIFO_SIZE;
     }
 
-	if( p->readP >= p->writeP )
+	if( p->readP > p->writeP )
 	{
-		return (p->readP - p->writeP);
+		return (p->endP - p->beginP) - (p->readP - p->writeP);
 	}
 	else
 	{
-		return  (p->endP - p->beginP) - (p->writeP - p->readP);
+		return  (p->writeP - p->readP);
 	}
 }
 
@@ -93,7 +95,7 @@ int fifo_gets(fifo *p, fifo_len_t len, fifo_data_t *bufP)
 
 	if(p->beginP==NULL)
     {
-        return -1;
+        return 0;
     }
 
 	while( (p->readP!=p->writeP) && (len>0) )
@@ -103,11 +105,11 @@ int fifo_gets(fifo *p, fifo_len_t len, fifo_data_t *bufP)
 			p->readP=p->beginP;
 		}
 
-        *bufP = *(p->readP);
-        count++;
-        p->readP++;
-        bufP++;
-        len--;
+		*bufP = *(p->readP);
+		count++;
+		p->readP++;
+		bufP++;
+		len--;
 	}
 	return count;
 }
@@ -126,7 +128,7 @@ int fifo_puts(fifo *p, fifo_len_t len, fifo_data_t *bufP)
 	fifo_len_t count=0;
     if(p->beginP==NULL)
     {
-        return -1;
+        return 0;
     }
 
 	while( (p->readP!=(p->writeP+1)) && (len>0) )

@@ -15,13 +15,8 @@
 
 #define MAX_FIFO_SIZE 64
 
-struct data_s
-{
-    int a;
-    int b;
-};
 typedef unsigned int fifo_len_t;
-typedef struct data_s fifo_data_t;
+typedef unsigned char fifo_data_t;
 
 /**
  * @brief Here is the struct definiton of fifo
